@@ -5,7 +5,7 @@ import go.Seq
 import io.nekohasekai.libbox.CommandClient
 import io.nekohasekai.libbox.CommandClientHandler
 import io.nekohasekai.libbox.CommandClientOptions
-import io.nekohasekai.libbox.Connections
+import io.nekohasekai.libbox.ConnectionEvents
 import io.nekohasekai.libbox.Libbox
 import io.nekohasekai.libbox.LogEntry
 import io.nekohasekai.libbox.LogIterator
@@ -87,7 +87,7 @@ open class CommandClient(
 
         fun updateClashMode(newMode: String) {}
 
-        fun updateConnections(connections: Connections) {}
+        fun writeConnectionEvents(events: ConnectionEvents) {}
     }
 
     private var commandClient: CommandClient? = null
@@ -197,9 +197,9 @@ open class CommandClient(
             getAllHandlers().forEach { it.updateClashMode(newMode) }
         }
 
-        override fun writeConnections(message: Connections?) {
-            if (message == null) return
-            getAllHandlers().forEach { it.updateConnections(message) }
+        override fun writeConnectionEvents(events: ConnectionEvents?) {
+            if (events == null) return
+            getAllHandlers().forEach { it.writeConnectionEvents(events) }
         }
     }
 }

@@ -1,6 +1,7 @@
 package io.nekohasekai.sfa.compose.screen.dashboard
 
 import androidx.lifecycle.viewModelScope
+import io.nekohasekai.libbox.ConnectionEvents
 import io.nekohasekai.libbox.Connections
 import io.nekohasekai.libbox.Libbox
 import io.nekohasekai.libbox.OutboundGroup
@@ -633,9 +634,15 @@ class DashboardViewModel : BaseViewModel<DashboardUiState, UiEvent>(), CommandCl
         }
     }
 
-    override fun updateConnections(connections: Connections) {
+    private var connectionsStore: Connections? = null
+
+    override fun writeConnectionEvents(events: ConnectionEvents) {
         viewModelScope.launch(Dispatchers.Main) {
-            val count = connections.iterator().toList().count { it.outboundType != "dns" }
+            if (connectionsStore == null) {
+                connectionsStore = Libbox.newConnections()
+            }
+            connectionsStore?.applyEvents(events)
+            val count = connectionsStore?.iterator()?.toList()?.count { it.outboundType != "dns" } ?: 0
             updateState { copy(connectionsCount = count) }
         }
     }
